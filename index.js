@@ -6,7 +6,7 @@ const connectDB = require('./database');
 const User = require('./users');
 const message = require('./sendemail');
 const app = express();
-const port = 3000;
+
 connectDB();
 // إعداد Middleware
 app.use(cors());
@@ -38,6 +38,7 @@ app.post('/verify-code',async(req,res,next)=>{
      const codeuser=req.body.code;
      const user = await User.findOne({userEmail:emailuser,userCode:codeuser});
      if(user){
+       await User.deleteOne({ _id: user._id });
        console.log('code true');
        res.json({ success: true, message: "✅ كود التحقق صحيح!" });
      }
@@ -54,6 +55,6 @@ app.post('/verify-code',async(req,res,next)=>{
 
 
 // تشغيل الخادم
-app.listen(port, "0.0.0.0", () => {
-  console.log(`🚀 الخادم يعمل على http://0.0.0.0:3000`);
+app.listen(process.env.PORT || 3000, () => {
+    console.log(`Server running on port ${process.env.PORT || 3000}`);
 });
